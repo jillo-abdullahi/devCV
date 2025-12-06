@@ -80,9 +80,15 @@ export function renderTemplateToHtml(resumeData: ResumeData, templateId: string)
   }
 
   try {
-    const htmlContent = ReactDOMServer.renderToStaticMarkup(
+    let htmlContent = ReactDOMServer.renderToStaticMarkup(
       React.createElement(TemplateComponent, { resumeData, mode: 'server' })
     );
+    
+    // Fix HTML entity encoding in CSS (React escapes quotes to &#x27;)
+    // This breaks font-family declarations like font-family: 'Exo'
+    htmlContent = htmlContent.replace(/&#x27;/g, "'");
+
+    console.log(`Rendered HTML for template: ${htmlContent}`);
 
     return `<!DOCTYPE html>${htmlContent}`;
   } catch (error) {
