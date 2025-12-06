@@ -17,7 +17,8 @@ export class ApiError extends Error {
 
 export async function generatePDF(
   resumeData: ResumeData,
-  templateId: TemplateId
+  templateId: TemplateId,
+  pages?: string[]
 ): Promise<Blob> {
   const response = await fetch(`${API_URL}/generate`, {
     method: "POST",
@@ -25,7 +26,7 @@ export async function generatePDF(
       Authorization: `Bearer ${API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ resumeData, templateId }),
+    body: JSON.stringify({ resumeData, templateId, pages }),
   });
 
   if (!response.ok) {

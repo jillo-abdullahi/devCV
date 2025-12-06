@@ -8,10 +8,10 @@ export interface TemplateProps {
   fontFamily?: string;
 }
 
-export const TemplateMinimalist: React.FC<TemplateProps> = ({ 
-  resumeData, 
+export const TemplateMinimalist: React.FC<TemplateProps> = ({
+  resumeData,
   mode = 'client',
-  fontFamily 
+  fontFamily
 }) => {
   const { personalInfo, summary, experience, projects, education, skills } = resumeData;
   const templateConfig = getTemplateConfig('minimalist');
@@ -96,7 +96,6 @@ export const TemplateMinimalist: React.FC<TemplateProps> = ({
 
     ${mode === 'server' ? '.section' : '.resume-preview .section'} {
       margin-bottom: 18px;
-      page-break-inside: avoid;
     }
 
     ${mode === 'server' ? '.section-title' : '.resume-preview .section-title'} {
@@ -108,6 +107,8 @@ export const TemplateMinimalist: React.FC<TemplateProps> = ({
       letter-spacing: 0.5px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 4px;
+      break-after: avoid;
+      page-break-after: avoid;
     }
 
     ${mode === 'server' ? '.summary' : '.resume-preview .summary'} {

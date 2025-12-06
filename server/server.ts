@@ -32,8 +32,8 @@ function authorizeMiddleware(req: Request, res: Response, next: NextFunction): v
   }
 
   // Support both "Bearer <token>" and direct token formats
-  const token = authHeader.startsWith('Bearer ') 
-    ? authHeader.substring(7) 
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.substring(7)
     : authHeader;
 
   if (token !== SECRET_KEY) {
@@ -63,14 +63,14 @@ app.get('/templates', (req: Request, res: Response) => {
     fontFamily: config.fontFamily,
     googleFontsUrl: config.googleFontsUrl,
   }));
-  
+
   res.status(200).json({ templates });
 });
 
 // Main PDF generation endpoint
 app.post('/generate', authorizeMiddleware, async (req: Request, res: Response) => {
   try {
-    const { resumeData, templateId } = req.body;
+    const { resumeData, templateId, pages } = req.body;
 
     // Validate request body
     if (!resumeData) {
@@ -85,7 +85,7 @@ app.post('/generate', authorizeMiddleware, async (req: Request, res: Response) =
 
     // Validate resumeData structure
     if (!resumeData.personalInfo) {
-      res.status(400).json({ 
+      res.status(400).json({
         error: 'resumeData.personalInfo is required',
         details: 'personalInfo must include name, title, email, phone, and location'
       });
@@ -98,7 +98,7 @@ app.post('/generate', authorizeMiddleware, async (req: Request, res: Response) =
     console.log(`Generating PDF for: ${typedResumeData.personalInfo.name} with template: ${templateId}`);
 
     // Generate PDF
-    const pdfBuffer = await generatePdfBuffer(typedResumeData, templateId);
+    const pdfBuffer = await generatePdfBuffer(typedResumeData, templateId, pages);
 
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
@@ -113,7 +113,7 @@ app.post('/generate', authorizeMiddleware, async (req: Request, res: Response) =
     console.error('Error in /generate endpoint:', error);
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     res.status(500).json({
       error: 'Failed to generate PDF',
       details: errorMessage
@@ -144,7 +144,7 @@ const server = app.listen(PORT, () => {
 // Graceful shutdown
 const gracefulShutdown = async (signal: string) => {
   console.log(`\n${signal} received. Starting graceful shutdown...`);
-  
+
   server.close(async () => {
     console.log('HTTP server closed');
     await shutdown();

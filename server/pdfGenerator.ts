@@ -83,7 +83,7 @@ export function renderTemplateToHtml(resumeData: ResumeData, templateId: string)
     let htmlContent = ReactDOMServer.renderToStaticMarkup(
       React.createElement(TemplateComponent, { resumeData, mode: 'server' })
     );
-    
+
     // Fix HTML entity encoding in CSS (React escapes quotes to &#x27;)
     // This breaks font-family declarations like font-family: 'Exo'
     htmlContent = htmlContent.replace(/&#x27;/g, "'");
@@ -104,7 +104,8 @@ export function renderTemplateToHtml(resumeData: ResumeData, templateId: string)
  */
 export async function generatePdfBuffer(
   resumeData: ResumeData,
-  templateId: string
+  templateId: string,
+  pages?: string[]
 ): Promise<Buffer> {
   let page: Page | null = null;
 
@@ -122,8 +123,51 @@ export async function generatePdfBuffer(
       throw new Error('Personal info is required in resume data');
     }
 
-    // Render template to HTML
-    const htmlContent = renderTemplateToHtml(resumeData, templateId);
+    let htmlContent: string;
+
+    if (pages && pages.length > 0) {
+      // Use client-provided pages
+      // We need to wrap them in a basic HTML structure with necessary styles
+      // We can reuse renderTemplateToHtml to get the styles, but replace the body content?
+      // Or just construct it manually.
+      // Let's use renderTemplateToHtml but with a special mode or just extract styles.
+      // Actually, TemplateMinimalist has logic to inject styles.
+      // Let's just render the template to get the head/styles, and then replace the body.
+
+      const fullTemplateHtml = renderTemplateToHtml(resumeData, templateId);
+
+      // Extract head content (styles, fonts)
+      const headMatch = fullTemplateHtml.match(/<head>([\s\S]*?)<\/head>/);
+      const headContent = headMatch ? headMatch[1] : '';
+
+      // Construct pages HTML
+      const pagesHtml = pages.map((pageContent, index) => `
+        <div style="position: relative; width: 210mm; height: 297mm; overflow: hidden; page-break-after: always; break-after: page;">
+          <div class="resume-preview" style="height: 100%; padding: 15mm 18mm; box-sizing: border-box;">
+            ${pageContent}
+          </div>
+        </div>
+      `).join('');
+
+      htmlContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            ${headContent}
+            <style>
+              body { margin: 0; padding: 0; background: white; }
+              @page { size: A4; margin: 0; }
+            </style>
+          </head>
+          <body>
+            ${pagesHtml}
+          </body>
+        </html>
+      `;
+    } else {
+      // Fallback to server-side rendering
+      htmlContent = renderTemplateToHtml(resumeData, templateId);
+    }
 
     // Get browser instance
     const browser = await getBrowser();
@@ -160,10 +204,10 @@ export async function generatePdfBuffer(
     console.error('Error generating PDF:', error);
 
     // Reset browser on critical errors
-    if (error instanceof Error && 
-        (error.message.includes('Target closed') || 
-         error.message.includes('Browser closed') ||
-         error.message.includes('disconnected'))) {
+    if (error instanceof Error &&
+      (error.message.includes('Target closed') ||
+        error.message.includes('Browser closed') ||
+        error.message.includes('disconnected'))) {
       await resetBrowser();
     }
 

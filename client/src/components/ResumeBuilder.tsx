@@ -9,13 +9,17 @@ import { ProjectsForm } from './ProjectsForm';
 import { EducationForm } from './EducationForm';
 import { SkillsForm } from './SkillsForm';
 import { SummaryForm } from './SummaryForm';
-import { ResumePreview } from './ResumePreview';
+
+import { MultiPagePreview } from './MultiPagePreview';
+
+import { useState } from 'react';
 
 export function ResumeBuilder() {
   const { resumeData, selectedTemplate } = useResumeStore();
+  const [paginatedHtml, setPaginatedHtml] = useState<string[]>([]);
 
   const generateMutation = useMutation({
-    mutationFn: () => generatePDF(resumeData, selectedTemplate),
+    mutationFn: () => generatePDF(resumeData, selectedTemplate, paginatedHtml),
     onSuccess: (blob) => {
       downloadPDF(blob, `resume-${Date.now()}.pdf`);
     },
@@ -89,16 +93,14 @@ export function ResumeBuilder() {
                 )}
               </CardContent>
             </Card>
-            
+
             <Card className="overflow-hidden p-0">
               <CardContent className="p-0">
-                <div 
-                  className="overflow-y-auto"
-                  style={{ height: 'calc(100vh - 180px)' }}
-                >
-                  <ResumePreview 
-                    resumeData={resumeData} 
+                <div style={{ height: 'calc(100vh - 180px)' }}>
+                  <MultiPagePreview
+                    resumeData={resumeData}
                     templateId={selectedTemplate}
+                    onPagesChange={setPaginatedHtml}
                   />
                 </div>
               </CardContent>
