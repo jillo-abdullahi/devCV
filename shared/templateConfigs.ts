@@ -4,9 +4,9 @@ export const templateConfigs: Record<TemplateId, TemplateConfig> = {
   minimalist: {
     id: 'minimalist',
     name: 'Minimalist',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-    googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-    description: 'Clean and modern design with Inter font',
+    fontFamily: "'Exo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+    googleFontsUrl: 'https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700&display=swap',
+    description: 'Clean and modern design with Exo font',
   },
   professional: {
     id: 'professional',

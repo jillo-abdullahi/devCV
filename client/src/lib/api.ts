@@ -51,24 +51,6 @@ export function downloadPDF(blob: Blob, filename: string = "resume.pdf") {
   window.URL.revokeObjectURL(url);
 }
 
-export interface TemplateResponse {
-  templates: Array<{
-    id: string;
-    name: string;
-    fontFamily: string;
-    googleFontsUrl?: string;
-    description?: string;
-  }>;
-}
-
-export async function getTemplates(): Promise<TemplateResponse> {
-  const response = await fetch(`${API_URL}/templates`);
-  if (!response.ok) {
-    throw new ApiError('Failed to fetch templates', response.status);
-  }
-  return await response.json();
-}
-
 export async function checkHealth(): Promise<{
   status: string;
   service: string;

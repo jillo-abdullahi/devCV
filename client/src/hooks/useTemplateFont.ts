@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { getTemplates } from '@/lib/api';
+import { getTemplateConfig } from '../../../shared/templateConfigs';
 import type { TemplateId } from '@/types/resume';
 
 /**
- * Custom hook to load and apply template-specific fonts from the backend
+ * Custom hook to load and apply template-specific fonts
  * 
  * This hook:
- * 1. Fetches template configuration from the backend API
+ * 1. Gets template configuration from the shared config
  * 2. Dynamically loads Google Fonts if specified in the template config
  * 3. Returns the fontFamily string to be used in component styles
  * 
  * This ensures the preview matches the downloaded PDF exactly by using
- * the same fonts defined in the backend template configuration.
+ * the same fonts defined in the shared template configuration.
  * 
  * @param templateId - The ID of the template to load fonts for
  * @returns Object containing fontFamily string and loading state
@@ -28,13 +28,11 @@ export const useTemplateFont = (templateId: TemplateId) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadTemplateFont = async () => {
+    const loadTemplateFont = () => {
       try {
-        setIsLoading(true);
-        const data = await getTemplates();
-        const config = data.templates.find(t => t.id === templateId);
+        const config = getTemplateConfig(templateId);
         
-        if (config?.googleFontsUrl) {
+        if (config.googleFontsUrl) {
           // Create unique ID for this font link
           const linkId = `font-${templateId}`;
           
@@ -50,13 +48,25 @@ export const useTemplateFont = (templateId: TemplateId) => {
           link.href = config.googleFontsUrl;
           link.id = linkId;
           document.head.appendChild(link);
+          
+          // Wait for font to load before marking as ready
+          link.onload = () => {
+            setFontFamily(config.fontFamily);
+            setIsLoading(false);
+          };
+          
+          // Fallback in case onload doesn't fire
+          setTimeout(() => {
+            setFontFamily(config.fontFamily);
+            setIsLoading(false);
+          }, 100);
+        } else {
+          setFontFamily(config.fontFamily);
+          setIsLoading(false);
         }
-        
-        setFontFamily(config?.fontFamily || 'sans-serif');
       } catch (error) {
         console.error('Failed to load template font:', error);
         setFontFamily('sans-serif');
-      } finally {
         setIsLoading(false);
       }
     };
