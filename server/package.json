@@ -1,0 +1,42 @@
+{
+  "name": "devcvserver",
+  "version": "1.0.0",
+  "description": "Secure Node.js microservice for generating high-quality PDF resumes using TypeScript and Playwright",
+  "main": "server.ts",
+  "scripts": {
+    "start": "node dist/server.js",
+    "test": "jest",
+    "dev": "ts-node server.ts",
+    "build": "npm run copy-shared && tsc",
+    "copy-shared": "mkdir -p shared && cp -r ../shared/* shared/",
+    "prebuild": "npm run copy-shared"
+  },
+  "keywords": [
+    "resume",
+    "pdf",
+    "playwright",
+    "typescript",
+    "microservice"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "playwright": "^1.40.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1"
+  }
+}

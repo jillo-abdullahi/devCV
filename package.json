@@ -1,0 +1,41 @@
+{
+  "name": "devcv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DevCV - Modern Resume Builder Monorepo",
+  "scripts": {
+    "dev": "npm run dev --workspace=client",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:all": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "build": "npm run build --workspaces",
+    "build:client": "npm run build --workspace=client",
+    "build:server": "npm run build --workspace=server",
+    "lint": "npm run lint --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules"
+  },
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jillo-abdullahi/devCV.git"
+  },
+  "keywords": [
+    "resume",
+    "cv",
+    "builder",
+    "pdf",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT"
+}
